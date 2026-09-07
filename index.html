@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CBLE Rote Memory Trainer</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+  <h1>CBLE Rote Trainer</h1>
+  <div id="bankline" class="sub">loading question bank...</div>
+</header>
+
+<main>
+  <!-- ============ SETUP ============ -->
+  <section id="setup" class="card hidden">
+    <h2>1. Group size</h2>
+    <div class="sizes" id="sizeButtons"></div>
+    <label class="customrow">
+      <span>Custom</span>
+      <input type="number" id="customSize" min="1" max="1000" placeholder="e.g. 25">
+      <button id="customGo" class="btn small">Set</button>
+    </label>
+
+    <h2>2. Pick a group</h2>
+    <div class="sub" id="groupHint"></div>
+    <div class="groups" id="groupButtons"></div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section id="quiz" class="card hidden">
+    <div class="quizbar">
+      <button id="backBtn" class="btn ghost small">Groups</button>
+      <span id="progress" class="progress"></span>
+    </div>
+    <div class="meta" id="qmeta"></div>
+    <div class="qtext" id="qtext"></div>
+    <div id="choices" class="choices"></div>
+    <div class="navrow">
+      <button id="prevBtn" class="btn ghost">Prev</button>
+      <button id="nextBtn" class="btn">Next</button>
+    </div>
+    <div id="unanswered" class="sub"></div>
+  </section>
+
+  <!-- ============ RESULTS ============ -->
+  <section id="results" class="card hidden">
+    <div class="quizbar">
+      <button id="backBtn2" class="btn ghost small">Groups</button>
+      <span class="progress" id="resultTitle"></span>
+    </div>
+    <div id="score" class="score"></div>
+    <div id="bestline" class="sub"></div>
+    <div class="navrow">
+      <button id="retakeBtn" class="btn">Retake this group</button>
+      <button id="nextGroupBtn" class="btn ghost">Next group</button>
+    </div>
+    <h2 id="reviewHead"></h2>
+    <div id="review"></div>
+  </section>
+</main>
+
+<footer class="sub">
+  Questions and answer keys from official CBP past exams. Order and choice letters are fixed and never shuffled.
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

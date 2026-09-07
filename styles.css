@@ -1,0 +1,97 @@
+:root {
+  --bg: #0f1115;
+  --card: #171a21;
+  --line: #262b36;
+  --fg: #e8eaf0;
+  --dim: #9aa3b2;
+  --accent: #4c8dff;
+  --good: #2ea36b;
+  --bad: #d9534f;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; padding: 0; }
+body {
+  overflow-x: hidden;
+  background: var(--bg);
+  color: var(--fg);
+  font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  padding: 0 0 40px;
+}
+header {
+  padding: 18px 16px 12px;
+  border-bottom: 1px solid var(--line);
+  position: sticky; top: 0; background: var(--bg); z-index: 5;
+}
+h1 { font-size: 19px; margin: 0; letter-spacing: .2px; }
+h2 { font-size: 14px; text-transform: uppercase; letter-spacing: .8px; color: var(--dim); margin: 22px 0 10px; }
+.sub { color: var(--dim); font-size: 13px; margin-top: 4px; }
+main { max-width: 780px; margin: 0 auto; padding: 0 12px; width: 100%; }
+.card { min-width: 0; overflow-wrap: anywhere; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin-top: 14px; }
+.hidden { display: none; }
+footer { max-width: 780px; margin: 22px auto 0; padding: 0 16px; font-size: 12px; }
+
+/* buttons */
+.btn {
+  background: #222735; color: var(--fg); border: 1px solid var(--line);
+  border-radius: 10px; padding: 11px 16px; font-size: 15px; cursor: pointer;
+  font-family: inherit;
+}
+.btn:active { transform: translateY(1px); }
+.btn:disabled { opacity: .4; cursor: default; }
+.btn.ghost { background: transparent; }
+.btn.small { padding: 7px 12px; font-size: 13px; }
+.btn.active { border-color: var(--accent); background: #1d2942; color: #cfe0ff; }
+
+.sizes { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn.size { min-width: 64px; }
+.customrow { display: flex; gap: 8px; align-items: center; margin-top: 10px; font-size: 14px; color: var(--dim); }
+.customrow input {
+  width: 90px; background: #0f131b; border: 1px solid var(--line); color: var(--fg);
+  border-radius: 8px; padding: 9px 10px; font: inherit;
+}
+
+.groups { display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 8px; margin-top: 10px; }
+.btn.group { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 9px 4px; }
+.gnum { font-size: 15px; }
+.gbest { font-size: 11px; color: var(--bad); }
+.gbest.pass { color: var(--good); }
+
+/* quiz */
+.quizbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+.progress { font-size: 13px; color: var(--dim); }
+.meta { font-size: 12px; color: var(--dim); margin-bottom: 8px; }
+.qtext { font-size: 16px; white-space: pre-wrap; margin-bottom: 14px; }
+.choices { display: flex; flex-direction: column; gap: 8px; }
+.choice {
+  display: flex; gap: 10px; align-items: flex-start; text-align: left;
+  background: #1b1f29; border: 1px solid var(--line); color: var(--fg);
+  border-radius: 10px; padding: 11px 12px; cursor: pointer; font: inherit; width: 100%;
+}
+.choice.picked { border-color: var(--accent); background: #1d2942; }
+.letter {
+  flex: 0 0 22px; font-weight: 700; color: var(--accent);
+}
+.ctext { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.navrow { display: flex; gap: 8px; margin-top: 16px; }
+.navrow .btn { flex: 1; }
+
+/* results */
+.score { display: flex; align-items: baseline; gap: 12px; margin: 6px 0 2px; }
+.big { font-size: 32px; font-weight: 700; }
+.big.pass { color: var(--good); }
+.big.fail { color: var(--bad); }
+.pct { font-size: 18px; color: var(--dim); }
+
+.rev { border-top: 1px solid var(--line); padding: 14px 0; }
+.revmeta { font-size: 12px; color: var(--dim); margin-bottom: 6px; }
+.revq { white-space: pre-wrap; margin-bottom: 10px; }
+.revrow { display: flex; gap: 10px; align-items: flex-start; padding: 9px 10px; border-radius: 8px; margin-bottom: 6px; font-size: 15px; }
+.revrow.right { background: rgba(46,163,107,.13); border: 1px solid rgba(46,163,107,.45); }
+.revrow.wrong { background: rgba(217,83,79,.11); border: 1px solid rgba(217,83,79,.4); }
+.revrow .tag { flex: 0 0 auto; font-size: 11px; color: var(--dim); text-transform: uppercase; letter-spacing: .5px; }
+.revnote { font-size: 12px; color: var(--dim); font-style: italic; margin-top: 4px; }
+
+@media (max-width: 480px) {
+  .revrow .tag { display: none; }
+  .navrow { position: sticky; bottom: 0; background: var(--card); padding-top: 10px; }
+}
