@@ -3,7 +3,20 @@
 A hostable static web app for rote memorization of the U.S. Customs Broker License Exam (CBLE),
 built from official CBP past exams and their official answer keys.
 
-Live at https://cble.poundsit.com
+Live at https://exit328.github.io/cble-trainer/
+
+## Custom domain (cble.poundsit.com) — how to switch back
+
+The custom domain is temporarily off because the DNS record was never added in Squarespace.
+To restore it:
+
+1. In Squarespace DNS for `poundsit.com`, add a CNAME record: host `cble`, value `exit328.github.io`.
+2. Re-add the custom domain to GitHub Pages:
+   ```
+   gh api -X PUT repos/exit328/cble-trainer/pages -f cname=cble.poundsit.com
+   ```
+   (or restore a `CNAME` file containing `cble.poundsit.com` to the root of `main`).
+3. Once DNS propagates, enable "Enforce HTTPS" in the repo's Pages settings.
 
 ## Host it locally
 
