@@ -57,6 +57,9 @@ There is no shuffle call anywhere in the codebase, by design.
 - Group size selector: 10, 20, 40, or custom.
 - Sequential group picker showing your best percent per group.
 - One question at a time, with Prev and Next, and an unanswered counter.
+- Show Answer button per question: highlights the correct letter (plus the note when one
+  exists) so you can move on. A revealed question is locked and always grades as missed,
+  and is tagged "answer revealed" in the review.
 - End-of-group score as x/N and percent, against the real 75% passing mark.
 - Review of every missed question showing the correct letter and its text, plus what you chose.
 - Retake any group. The order and the letters are identical on every attempt.

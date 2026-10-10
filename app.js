@@ -20,6 +20,7 @@ var groupSize = 20;
 var groupNumber = 1;
 var current = [];       // the slice being taken (a view of bank, same order)
 var answers = {};       // questionId -> chosen letter
+var revealed = {};      // questionId -> true once Show Answer was used; grades as missed
 var cursor = 0;
 
 /* ---------- cookies ---------- */
@@ -129,6 +130,7 @@ function startGroup(n) {
   setCookie(COOKIE_GROUP, groupNumber);
   current = sliceFor(n);      // same canonical order, always
   answers = {};
+  revealed = {};
   cursor = 0;
   show('quiz');
   renderQuestion();
@@ -136,30 +138,49 @@ function startGroup(n) {
 
 function renderQuestion() {
   var q = current[cursor];
+  var isRevealed = !!revealed[q.id];
   $('progress').textContent =
     'Group ' + groupNumber + '  .  Q ' + (cursor + 1) + ' of ' + current.length;
   $('qmeta').textContent =
-    q.examLabel + '  .  exam question ' + q.number + (q.category ? '  .  ' + q.category : '');
+    q.examLabel + '  .  exam question ' + q.number + (q.category ? '  .  ' + q.category : '') +
+    (isRevealed ? '  .  REVEALED' : '');
   $('qtext').textContent = q.question;
 
   var wrap = $('choices');
   wrap.innerHTML = '';
   // Choices rendered in stored order. No sort, no shuffle.
   q.choices.forEach(function (c) {
+    var isRight = q.correct.indexOf(c.letter) !== -1;
     var b = document.createElement('button');
-    b.className = 'choice' + (answers[q.id] === c.letter ? ' picked' : '');
-    b.innerHTML = '<span class="letter">' + c.letter + '</span><span class="ctext"></span>';
+    b.className = 'choice' + (answers[q.id] === c.letter ? ' picked' : '') +
+      (isRevealed && isRight ? ' correct' : '');
+    b.innerHTML = '<span class="letter">' + c.letter + '</span><span class="ctext"></span>' +
+      (isRevealed && isRight ? '<span class="tag">correct</span>' : '');
     b.querySelector('.ctext').textContent = c.text;
     b.onclick = function () {
+      if (revealed[q.id]) return;   // answer shown: locked, grades as missed
       answers[q.id] = c.letter;
       renderQuestion();
     };
     wrap.appendChild(b);
   });
 
+  var note = $('qnote');
+  if (isRevealed && q.note) {
+    note.textContent = q.note;
+    note.classList.remove('hidden');
+  } else {
+    note.textContent = '';
+    note.classList.add('hidden');
+  }
+
+  var rb = $('revealBtn');
+  rb.disabled = isRevealed;
+  rb.textContent = isRevealed ? 'Revealed  .  counts as missed' : 'Show Answer';
+
   $('prevBtn').disabled = cursor === 0;
   $('nextBtn').textContent = (cursor === current.length - 1) ? 'Finish and grade' : 'Next';
-  var missing = current.filter(function (x) { return !answers[x.id]; }).length;
+  var missing = current.filter(function (x) { return !answers[x.id] && !revealed[x.id]; }).length;
   $('unanswered').textContent = missing ? missing + ' unanswered' : 'all answered';
 }
 
@@ -167,10 +188,14 @@ function isCorrect(q, letter) {
   if (!letter) return false;
   return q.correct.indexOf(letter) !== -1;
 }
+// A revealed question never scores, even if the right letter was picked afterwards.
+function countsCorrect(q) {
+  return !revealed[q.id] && isCorrect(q, answers[q.id]);
+}
 
 function grade() {
   var correct = 0;
-  current.forEach(function (q) { if (isCorrect(q, answers[q.id])) correct++; });
+  current.forEach(function (q) { if (countsCorrect(q)) correct++; });
   var total = current.length;
   var pct = Math.round(correct / total * 100);
   var stat = recordAttempt(groupSize, groupNumber, correct, total);
@@ -183,7 +208,7 @@ function grade() {
     'Attempts: ' + stat.attempts + '  .  Best: ' + stat.best + ' / ' + stat.bestTotal +
     ' (' + Math.round(stat.best / stat.bestTotal * 100) + '%)  .  Passing is 75%';
 
-  var missed = current.filter(function (q) { return !isCorrect(q, answers[q.id]); });
+  var missed = current.filter(function (q) { return !countsCorrect(q); });
   $('reviewHead').textContent = missed.length ? 'Missed (' + missed.length + ')' : 'Nothing missed';
   var rv = $('review');
   rv.innerHTML = '';
@@ -193,7 +218,8 @@ function grade() {
     d.className = 'rev';
     var head = document.createElement('div');
     head.className = 'revmeta';
-    head.textContent = q.examLabel + '  .  question ' + q.number;
+    head.textContent = q.examLabel + '  .  question ' + q.number +
+      (revealed[q.id] ? '  .  answer revealed' : '');
     var qt = document.createElement('div');
     qt.className = 'revq';
     qt.textContent = q.question;
@@ -213,7 +239,9 @@ function grade() {
     if (!picked) {
       var no = document.createElement('div');
       no.className = 'revrow wrong';
-      no.innerHTML = '<span class="letter">-</span><span class="ctext">You left this blank.</span>';
+      no.innerHTML = '<span class="letter">-</span><span class="ctext"></span>';
+      no.querySelector('.ctext').textContent =
+        revealed[q.id] ? 'Answer was revealed.' : 'You left this blank.';
       d.appendChild(no);
     }
     if (q.note) {
@@ -235,6 +263,10 @@ function backToGroups() {
   show('setup');
 }
 
+$('revealBtn').onclick = function () {
+  revealed[current[cursor].id] = true;
+  renderQuestion();
+};
 $('prevBtn').onclick = function () { if (cursor > 0) { cursor--; renderQuestion(); } };
 $('nextBtn').onclick = function () {
   if (cursor < current.length - 1) { cursor++; renderQuestion(); }

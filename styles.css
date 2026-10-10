@@ -68,6 +68,14 @@ footer { max-width: 780px; margin: 22px auto 0; padding: 0 16px; font-size: 12px
   border-radius: 10px; padding: 11px 12px; cursor: pointer; font: inherit; width: 100%;
 }
 .choice.picked { border-color: var(--accent); background: #1d2942; }
+.choice.correct { border-color: rgba(46,163,107,.65); background: rgba(46,163,107,.13); }
+.choice .tag {
+  flex: 0 0 auto; align-self: center; font-size: 11px; color: var(--good);
+  text-transform: uppercase; letter-spacing: .5px;
+}
+.btn.reveal { width: 100%; margin-top: 12px; min-height: 44px; color: var(--dim); }
+.btn.reveal:disabled { opacity: 1; color: var(--good); border-color: rgba(46,163,107,.45); }
+.qnote { font-size: 13px; color: var(--dim); font-style: italic; margin-top: 10px; }
 .letter {
   flex: 0 0 22px; font-weight: 700; color: var(--accent);
 }
