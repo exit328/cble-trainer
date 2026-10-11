@@ -13,6 +13,7 @@
 var COOKIE_SIZE = 'cble_group_size';
 var COOKIE_GROUP = 'cble_group_number';
 var LS_SCORES = 'cble_group_stats_v1';   // localStorage: per-group attempts + best score
+var LS_INSTANT = 'cble_instant_feedback_v1'; // localStorage: '1' = show answer after each question
 var SIZES = [10, 20, 40];
 
 var bank = [];          // canonical order, never mutated
@@ -21,6 +22,7 @@ var groupNumber = 1;
 var current = [];       // the slice being taken (a view of bank, same order)
 var answers = {};       // questionId -> chosen letter
 var revealed = {};      // questionId -> true once Show Answer was used; grades as missed
+var instantFeedback = false; // ON: right/wrong shown as soon as a choice is picked; scores normally
 var cursor = 0;
 
 /* ---------- cookies ---------- */
@@ -136,9 +138,20 @@ function startGroup(n) {
   renderQuestion();
 }
 
+function setInstant(on) {
+  instantFeedback = !!on;
+  try { localStorage.setItem(LS_INSTANT, instantFeedback ? '1' : '0'); } catch (e) {}
+  $('instantToggle').checked = instantFeedback;
+  $('instantToggleQuiz').checked = instantFeedback;
+  if (!$('quiz').classList.contains('hidden')) renderQuestion();
+}
+
 function renderQuestion() {
   var q = current[cursor];
   var isRevealed = !!revealed[q.id];
+  // Instant mode shows the same feedback as a reveal once a choice is picked,
+  // but the question still scores normally; only Show Answer grades as missed.
+  var showFeedback = isRevealed || (instantFeedback && !!answers[q.id]);
   $('progress').textContent =
     'Group ' + groupNumber + '  .  Q ' + (cursor + 1) + ' of ' + current.length;
   $('qmeta').textContent =
@@ -151,14 +164,18 @@ function renderQuestion() {
   // Choices rendered in stored order. No sort, no shuffle.
   q.choices.forEach(function (c) {
     var isRight = q.correct.indexOf(c.letter) !== -1;
+    var isPicked = answers[q.id] === c.letter;
     var b = document.createElement('button');
-    b.className = 'choice' + (answers[q.id] === c.letter ? ' picked' : '') +
-      (isRevealed && isRight ? ' correct' : '');
+    b.className = 'choice' + (isPicked ? ' picked' : '') +
+      (showFeedback && isRight ? ' correct' : '') +
+      (showFeedback && isPicked && !isRight ? ' wrongpick' : '');
     b.innerHTML = '<span class="letter">' + c.letter + '</span><span class="ctext"></span>' +
-      (isRevealed && isRight ? '<span class="tag">correct</span>' : '');
+      (showFeedback && isRight ? '<span class="tag">correct</span>' : '') +
+      (showFeedback && isPicked && !isRight ? '<span class="tag bad">you chose</span>' : '');
     b.querySelector('.ctext').textContent = c.text;
     b.onclick = function () {
       if (revealed[q.id]) return;   // answer shown: locked, grades as missed
+      if (instantFeedback && answers[q.id]) return;  // instant mode: locked once answered
       answers[q.id] = c.letter;
       renderQuestion();
     };
@@ -166,7 +183,7 @@ function renderQuestion() {
   });
 
   var note = $('qnote');
-  if (isRevealed && q.note) {
+  if (showFeedback && q.note) {
     note.textContent = q.note;
     note.classList.remove('hidden');
   } else {
@@ -177,6 +194,10 @@ function renderQuestion() {
   var rb = $('revealBtn');
   rb.disabled = isRevealed;
   rb.textContent = isRevealed ? 'Revealed  .  counts as missed' : 'Show Answer';
+  // Instant feedback already shows the answer once picked; hide the reveal
+  // button there so a stray tap cannot turn a scored answer into a miss.
+  if (showFeedback && !isRevealed) rb.classList.add('hidden');
+  else rb.classList.remove('hidden');
 
   $('prevBtn').disabled = cursor === 0;
   $('nextBtn').textContent = (cursor === current.length - 1) ? 'Finish and grade' : 'Next';
@@ -278,6 +299,8 @@ $('retakeBtn').onclick = function () { startGroup(groupNumber); };
 $('nextGroupBtn').onclick = function () {
   startGroup(groupNumber < groupCount() ? groupNumber + 1 : 1);
 };
+$('instantToggle').onchange = function () { setInstant(this.checked); };
+$('instantToggleQuiz').onchange = function () { setInstant(this.checked); };
 $('customGo').onclick = function () {
   var v = parseInt($('customSize').value, 10);
   if (v > 0) setSize(v);
@@ -302,6 +325,10 @@ fetch('questions.json')
     if (cs > 0) groupSize = cs;
     var cg = parseInt(getCookie(COOKIE_GROUP), 10);
     if (cg > 0 && cg <= groupCount()) groupNumber = cg;
+
+    try { instantFeedback = localStorage.getItem(LS_INSTANT) === '1'; } catch (e) {}
+    $('instantToggle').checked = instantFeedback;
+    $('instantToggleQuiz').checked = instantFeedback;
 
     renderSizeButtons();
     renderGroupButtons();

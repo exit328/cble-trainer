@@ -51,6 +51,14 @@ footer { max-width: 780px; margin: 22px auto 0; padding: 0 16px; font-size: 12px
 }
 
 .groups { display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 8px; margin-top: 10px; }
+.togglerow {
+  display: flex; gap: 10px; align-items: center; cursor: pointer;
+  font-size: 14px; color: var(--dim); margin-top: 10px; min-height: 28px;
+}
+.togglerow input {
+  width: 20px; height: 20px; flex: 0 0 auto; margin: 0; accent-color: var(--accent);
+}
+.togglerow.compact { margin: 0 0 10px; font-size: 13px; }
 .btn.group { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 9px 4px; }
 .gnum { font-size: 15px; }
 .gbest { font-size: 11px; color: var(--bad); }
@@ -69,10 +77,12 @@ footer { max-width: 780px; margin: 22px auto 0; padding: 0 16px; font-size: 12px
 }
 .choice.picked { border-color: var(--accent); background: #1d2942; }
 .choice.correct { border-color: rgba(46,163,107,.65); background: rgba(46,163,107,.13); }
+.choice.wrongpick { border-color: rgba(217,83,79,.6); background: rgba(217,83,79,.12); }
 .choice .tag {
   flex: 0 0 auto; align-self: center; font-size: 11px; color: var(--good);
   text-transform: uppercase; letter-spacing: .5px;
 }
+.choice .tag.bad { color: var(--bad); }
 .btn.reveal { width: 100%; margin-top: 12px; min-height: 44px; color: var(--dim); }
 .btn.reveal:disabled { opacity: 1; color: var(--good); border-color: rgba(46,163,107,.45); }
 .qnote { font-size: 13px; color: var(--dim); font-style: italic; margin-top: 10px; }

@@ -26,6 +26,12 @@
     <h2>2. Pick a group</h2>
     <div class="sub" id="groupHint"></div>
     <div class="groups" id="groupButtons"></div>
+
+    <h2>3. Options</h2>
+    <label class="togglerow">
+      <input type="checkbox" id="instantToggle">
+      <span>Show answer after each question</span>
+    </label>
   </section>
 
   <!-- ============ QUIZ ============ -->
@@ -34,6 +40,10 @@
       <button id="backBtn" class="btn ghost small">Groups</button>
       <span id="progress" class="progress"></span>
     </div>
+    <label class="togglerow compact">
+      <input type="checkbox" id="instantToggleQuiz">
+      <span>Show answer after each question</span>
+    </label>
     <div class="meta" id="qmeta"></div>
     <div class="qtext" id="qtext"></div>
     <div id="choices" class="choices"></div>
